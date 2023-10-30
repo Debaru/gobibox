@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"path"
 
 	ftpbox "github.com/Debaru/gobibox/internal/ftp"
 	"github.com/Debaru/gobibox/internal/qbittorent"
@@ -47,7 +49,8 @@ func Download(files []FileGoBiBox) error {
 			files[i].Downloaded = true
 
 			data, _ := json.MarshalIndent(&files, "  ", "  ")
-			ioutil.WriteFile("data.json", data, 0740)
+			pathFile := path.Join("config/", "data.json")
+			os.WriteFile(pathFile, data, 0740)
 		}
 	}
 
@@ -67,7 +70,8 @@ func GetFilesToDownload(torrents []qbittorent.TorrentContent) []FileGoBiBox {
 	var files []FileGoBiBox
 	var isFound bool
 
-	data, err := ioutil.ReadFile("data.json")
+	pathFile := path.Join("config/", "data.json")
+	data, err := ioutil.ReadFile(pathFile)
 	if err == nil {
 		json.Unmarshal(data, &files)
 	}

@@ -3,8 +3,8 @@ package main
 import (
 	"encoding/json"
 	"flag"
-	"io/ioutil"
 	"os"
+	"path"
 	"time"
 
 	"github.com/Debaru/gobibox/internal/gobibox"
@@ -38,6 +38,13 @@ func main() {
 		}
 	}
 
+	if _, err := os.Stat("config/"); os.IsNotExist(err) {
+		err = os.Mkdir("config/", 0740)
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	for true {
 		err = qbittorent.Connect(url, login, password)
 		if err != nil {
@@ -51,7 +58,9 @@ func main() {
 
 		files := gobibox.GetFilesToDownload(torrents)
 		data, _ := json.MarshalIndent(&files, "  ", "  ")
-		ioutil.WriteFile("data.json", data, 0740)
+
+		pathFile := path.Join("config/", "data.json")
+		os.WriteFile(pathFile, data, 0740)
 
 		gobibox.Url = url
 		gobibox.Login = login
